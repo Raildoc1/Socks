@@ -59,9 +59,28 @@ public class Client {
 
             readBytes = in.read(bytes);
 
-            byte[] byteAddr = {bytes[4], bytes[5], bytes[6], bytes[7]};
-            targetAddress = InetAddress.getByAddress(byteAddr);
+            if(bytes[3] == 1) {
+                byte[] byteAddr = {bytes[4], bytes[5], bytes[6], bytes[7]};
+                targetAddress = InetAddress.getByAddress(byteAddr);
+            } else if (bytes[3] == 3) {
 
+                byte[] hostNameBytes = new byte[readBytes - 6];
+
+                for(int i = 0; i < hostNameBytes.length; i++) {
+                    hostNameBytes[i] = bytes[i + 4];
+                }
+
+                String host = new String(hostNameBytes);
+
+                targetAddress = InetAddress.getByName(host);
+            } else {
+                System.out.println("Not ip or host name");
+                status = Status.FAILED;
+                return false;
+            }
+
+
+            //byte[] bytePort = {bytes[readBytes - 3], bytes[readBytes - 2]};
             byte[] bytePort = {bytes[8], bytes[9]};
             targetPort = SocksTools.bytesToPort(bytePort);
 
@@ -99,7 +118,7 @@ public class Client {
 
                 int readBytes = in.read(bytes);
 
-                System.out.println("source read bytes: " + readBytes);
+                System.out.println("source -> target: " + readBytes + " bytes");
 
                 byte[] toTarget = new byte[readBytes];
 
@@ -119,7 +138,7 @@ public class Client {
 
                 int readBytes = targetIn.read(bytes);
 
-                System.out.println("target read bytes: " + readBytes);
+                System.out.println("target -> source: " + readBytes + " bytes");
 
                 byte[] toSource = new byte[readBytes];
 
