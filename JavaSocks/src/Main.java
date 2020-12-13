@@ -12,6 +12,7 @@ import java.util.List;
 
 public class Main {
     private static final int BUFFER_SIZE = 2_048_000;
+    private static final int MAX_SO_TIMEOUT = 5;
     private static ArrayList<Client> clientList;
 
     public static void main(String args[]) {
@@ -29,7 +30,7 @@ public class Main {
         try {
             ServerSocket socket = new ServerSocket(port);
 
-            socket.setSoTimeout(1);
+            socket.setSoTimeout(MAX_SO_TIMEOUT);
 
 
             while(true) {
@@ -41,6 +42,7 @@ public class Main {
                     if(newClient.getStatus() == Client.Status.ALIVE) {
                         System.out.println("new client accepted!");
                         clientList.add(newClient);
+                        socket.setSoTimeout(MAX_SO_TIMEOUT);
                     } else {
                         System.out.println("client accept failed :c");
                         newClient.close();
@@ -49,6 +51,8 @@ public class Main {
                 } catch (IOException e) { /* IGNORE */}
 
                 if(clientList.size() == 0) {
+                    System.out.println("Waiting for clients...");
+                    socket.setSoTimeout(0);
                     continue;
                 }
 

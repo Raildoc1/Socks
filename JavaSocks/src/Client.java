@@ -73,16 +73,17 @@ public class Client {
                 String host = new String(hostNameBytes);
 
                 targetAddress = InetAddress.getByName(host);
+
             } else {
                 System.out.println("Not ip or host name");
                 status = Status.FAILED;
                 return false;
             }
 
+            byte[] bytePort = {bytes[readBytes - 2], bytes[readBytes - 1]};
+            targetPort = SocksTools.bytesToPort(bytePort);
 
             //byte[] bytePort = {bytes[readBytes - 3], bytes[readBytes - 2]};
-            byte[] bytePort = {bytes[8], bytes[9]};
-            targetPort = SocksTools.bytesToPort(bytePort);
 
             targetSocket = new Socket(targetAddress, targetPort);
             targetIn = targetSocket.getInputStream();
