@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     private static final int BUFFER_SIZE = 2_048_000;
@@ -68,6 +69,19 @@ public class Main {
 
                 for (var client : clientList) {
                     client.listenTick();
+                }
+
+                if(System.in.available() != 0) {
+                    Scanner sc = new Scanner(System.in);
+                    String s = sc.nextLine();
+                    if(s.equals("stop")) {
+                        socket.close();
+                        for (var client : clientList) {
+                            client.close();
+                        }
+                        clientList.clear();
+                        break;
+                    }
                 }
 
             }
